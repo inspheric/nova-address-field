@@ -1,0 +1,30 @@
+{
+    "name": "inspheric/nova-address-field",
+    "description": "A Laravel Nova Address field.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0",
+        "commerceguys/addressing": "^v1.0.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Inspheric\\Fields\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Inspheric\\Fields\\AddressFieldServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
