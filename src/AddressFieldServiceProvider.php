@@ -8,9 +8,12 @@ use CommerceGuys\Addressing\Country\CountryRepository;
 
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 
+use Illuminate\Support\Facades\Route;
+
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\ServiceProvider;
+use Inspheric\AddressTool\Http\Middleware\Authorize;
 
 class AddressFieldServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,16 @@ class AddressFieldServiceProvider extends ServiceProvider
             Nova::script('address', __DIR__.'/../dist/js/field.js');
             Nova::style('address', __DIR__.'/../dist/css/field.css');
         });
+
+        $this->app->booted(function () {
+            $this->routes();
+        });
+
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'address');
+
+        $this->publishes([
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/address'),
+        ]);
     }
 
     /**
@@ -35,14 +48,32 @@ class AddressFieldServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('address.repository', function () {
-            $locale = $this->app->getLocale() ?: 'en';
-            $fallbackLocale = $this->app['config']->get('fallback_locale', 'en');
 
-            $countries = new CountryRepository($locale, $fallbackLocale);
+            $locale = $this->app->getLocale() ?: 'en';
+
+            $countries = new CountryRepository($locale, 'en');
             $format = new AddressFormatRepository();
             $subdivisions = new SubdivisionRepository($format);
+            $translator = app('translator');
 
-            return new AddressRepository($locale, $countries, $subdivisions, $format);
+            return new AddressRepository($locale, $countries, $subdivisions, $format, $translator);
         });
+    }
+
+    /**
+     * Register the tool's routes.
+     *
+     * @return void
+     */
+    protected function routes()
+    {
+        if ($this->app->routesAreCached()) {
+            return;
+        }
+
+        Route::middleware('web') //nova
+                ->namespace('Inspheric\\Fields\\Http\\Controllers')
+                ->prefix('nova-vendor/address-field')
+                ->group(__DIR__.'/../routes/api.php');
     }
 }
