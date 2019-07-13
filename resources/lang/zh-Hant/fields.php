@@ -8,7 +8,7 @@ return [
     'country'          => '國家/地區',
     'county'           => '郡/縣',
     'department'       => '部門',
-    'district'         => 'District',
+    'district'         => '區',
     'do_si'            => '道/市',
     'eircode'          => '愛爾蘭郵政編碼',
     'emirate'          => '埃米爾管轄區',
