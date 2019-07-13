@@ -3,7 +3,6 @@
 namespace Inspheric\Fields;
 
 use CommerceGuys\Addressing\AddressFormat\AddressField;
-use CommerceGuys\Addressing\AddressFormat\AddressFormatHelper;
 use CommerceGuys\Addressing\AddressFormat\AddressFormatRepository;
 use CommerceGuys\Addressing\Country\CountryRepository;
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
@@ -143,9 +142,15 @@ class AddressRepository
     {
         $format = $this->addressFormat($countryCode);
 
-        $fields = $this->addressFieldsToArray($format->getFormat());
-        $localFields = $format->getLocalFormat() ? $this->addressFieldsToArray($format->getLocalFormat()) : [];
-        $usedFields = $format->getUsedFields();
+        if ($format->getLocalFormat() && substr($this->locale, 0, 2) == substr($format->getLocale(), 0, 2)) {
+            $fields = $format->getLocalFormat();
+        }
+        else {
+            $fields = $format->getFormat();
+        }
+
+        $fields = $this->addressFieldsToArray($fields);
+        $usedFields = $this->toInternalFields($format->getUsedFields());
 
         $hidden = [];
 
@@ -153,7 +158,6 @@ class AddressRepository
         $hidden = $field->getHiddenFields();
 
         $fields = array_values(array_diff($fields, $hidden));
-        $localFields = array_values(array_diff($localFields, $hidden));
         $usedFields = array_values(array_diff($usedFields, $hidden));
 
         $labels = collect($usedFields)->mapWithKeys(function($field) use ($countryCode) {
@@ -161,9 +165,8 @@ class AddressRepository
         });
 
         return [
-            'format' => $fields,
-            'localFormat' => $localFields,
-            'labels' => $labels,
+            'format'      => $fields,
+            'labels'      => $labels,
         ];
     }
 
@@ -181,11 +184,7 @@ class AddressRepository
 
         preg_match_all($expression, $formatString, $foundTokens);
 
-        foreach ($foundTokens[1] as $token) {
-            $addressFields[] = $token;
-        }
-
-        return $addressFields;
+        return $this->toInternalFields($foundTokens[1]);
     }
 
     /**
@@ -201,48 +200,91 @@ class AddressRepository
     {
         $locale = $locale ?: $this->locale;
 
-        if (is_null($countryCode) && $field == 'countryCode') {
-            return $this->translator->get('address::labels.country');
+        if (is_null($countryCode) && $field == 'country') {
+            return $this->translator->get('address-field::fields.country');
         }
 
-        $type = null;
+        $internalField = $this->toInternalField($field);
+        $line = "address-field::fields.$internalField";
 
         if (!is_null($countryCode)) {
+
             $format = $this->addressFormat($countryCode, $locale);
-            $method = 'get'.ucfirst($field).'Type';
+            $method = 'get'.ucfirst($this->toExternalField($field)).'Type';
 
             if (method_exists($format, $method)) {
                 $type = $format->$method();
-            }
-
-            $lines = [
-                "address::labels.$countryCode.$field",
-                "address::labels.$field",
-            ];
-        }
-        else {
-            $lines = [
-                "address::labels.$field",
-            ];
-        }
-
-        foreach ($lines as $line) {
-            $line = $type ? "$line.$type" : $line;
-
-            if ($this->translator->hasForLocale($line, $locale)) {
-                return $this->translator->get($line);
+                $line = "address-field::fields.$type";
             }
         }
 
-        foreach ($lines as $line) {
-            $line = $type ? "$line.$type" : $line;
-
-            if ($this->translator->hasForLocale($line, 'en')) {
-                return $this->translator->get($line);
-            }
+        if ($this->translator->has($line)) {
+            return $this->translator->get($line);
         }
 
         return ucwords(str_replace('_', ' ', $field));
+    }
+
+    /**
+     * Rename the field from commerceguys/addressing for internal use.
+     *
+     * @param  string $field
+     *
+     * @return string
+     */
+    public function toInternalField(string $field)
+    {
+        switch ($field) {
+            case 'givenName':
+            case 'addressLine2':
+                return;
+                break;
+            case 'addressLine1':
+                return 'address_line';
+            case 'familyName':
+                return 'recipient';
+        }
+
+        return Str::snake($field);
+    }
+
+    /**
+     * Rename all fields from for internal use.
+     *
+     * @param  string[] $fields
+     *
+     * @return string[]
+     */
+    public function toInternalFields(array $fields)
+    {
+        $internalFields = [];
+
+        foreach ($fields as $field) {
+            if ($field = $this->toInternalField($field)) {
+                $internalFields[] = $field;
+            }
+        }
+
+        return $internalFields;
+    }
+
+    /**
+     * Rename an internal field to commerceguys/addressing for external use.
+     *
+     * @param  string $field
+     *
+     * @return string
+     */
+    public function toExternalField(string $field)
+    {
+        switch ($field) {
+            case 'address_line':
+                return 'addressLine1';
+            case 'recipient':
+                return 'familyName';
+        }
+
+        return Str::camel($field);
     }
 
     /**
@@ -269,6 +311,6 @@ class AddressRepository
             }
         }
 
-        return Address::make('Address');
+        return Address::make('Address', 'address');
     }
 }
