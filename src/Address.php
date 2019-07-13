@@ -96,17 +96,7 @@ class Address extends Field
         $countryCode = $this->getAddressValue('country_code');
 
         if ($countryCode) {
-
-            return $repository->addressFormatForField($countryCode, $this);
-
-            return collect($repository->addressFormatForField($countryCode)['format'])
-                ->except($this->hiddenFields)
-                ->map(function($field) use ($repository, $countryCode) {
-                    return [
-                        'attribute' => $field,
-                        'name'      => $repository->label($field, $countryCode),
-                    ];
-                })->values();
+            return [$countryCode => $repository->addressFormatForField($countryCode, $this)];
         }
 
         return [];
@@ -125,7 +115,7 @@ class Address extends Field
             'country_code' => [
                 'attribute'       => 'country_code',
                 'name'            => $repository->label('country'),
-                // 'options'         => $repository->getOptionsList($repository->countries(true)),
+                'options'         => $repository->getOptionsList($repository->countries(true)),
             ],
             'format' => $this->getFormat(),
         ], parent::jsonSerialize());

@@ -22,9 +22,9 @@ class AddressFormatsController extends Controller
         $resource = $request->get('resource');
         $attribute = $request->get('attribute');
 
-        $field = \Inspheric\Fields\Address::make('Address', 'home_address');
-        $field->value = ['country_code' => $countryCode];
-        return response(json_encode($field, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'text/plain']);
+        // $field = \Inspheric\Fields\Address::make('Address', 'home_address');
+        // $field->value = ['country_code' => $countryCode];
+        // return response(json_encode($field, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'text/plain']);
 
         return app('address-field.repository')->addressFormatForResourceAttribute($countryCode, $resource, $attribute);
     }
