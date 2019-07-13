@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Adresas',
+    'address_line'     => 'Adresas',
     'area'             => 'Sritis',
     'city'             => 'Miestas',
     'country'          => 'Šalis/Regionas',

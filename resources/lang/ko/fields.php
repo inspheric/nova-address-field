@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => '상세 주소',
+    'address_line'     => '상세 주소',
     'area'             => '지구',
     'city'             => '시/군/구',
     'country'          => '국가/지역',

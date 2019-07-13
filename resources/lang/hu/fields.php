@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Cím',
+    'address_line'     => 'Cím',
     'area'             => 'Terület',
     'city'             => 'Település',
     'country'          => 'Ország/Régió',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Địa chỉ đường phố',
+    'address_line'     => 'Địa chỉ đường phố',
     'area'             => 'Vùng',
     'city'             => 'Thành phố',
     'country'          => 'Quốc gia/Vùng',

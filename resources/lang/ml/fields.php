@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'സ്ഥല വിലാസം',
+    'address_line'     => 'സ്ഥല വിലാസം',
     'area'             => 'ഏരിയ',
     'city'             => 'നഗരം',
     'country'          => 'രാജ്യം/പ്രവിശ്യ',

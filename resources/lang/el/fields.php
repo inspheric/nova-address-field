@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Οδός',
+    'address_line'     => 'Οδός',
     'area'             => 'Περιοχή',
     'city'             => 'Πόλη',
     'country'          => 'Χώρα/Περιοχή',

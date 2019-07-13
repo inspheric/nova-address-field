@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Gatuadress',
+    'address_line'     => 'Gatuadress',
     'area'             => 'Område',
     'city'             => 'Stad',
     'country'          => 'Land/Region',

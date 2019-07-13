@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Alamat',
+    'address_line'     => 'Alamat',
     'area'             => 'Wilayah',
     'city'             => 'Kota',
     'country'          => 'Negara/Wilayah',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'রাস্তার ঠিকানা',
+    'address_line'     => 'রাস্তার ঠিকানা',
     'area'             => 'এলাকা',
     'city'             => 'শহর',
     'country'          => 'দেশ/অঞ্চল',

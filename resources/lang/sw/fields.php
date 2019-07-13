@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Anwani ya barabara',
+    'address_line'     => 'Anwani ya barabara',
     'area'             => 'Eneo',
     'city'             => 'Jiji',
     'country'          => 'Nchi/Eneo',

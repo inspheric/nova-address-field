@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'पता',
+    'address_line'     => 'पता',
     'area'             => 'क्षेत्र',
     'city'             => 'शहर',
     'country'          => 'देश/क्षेत्र',

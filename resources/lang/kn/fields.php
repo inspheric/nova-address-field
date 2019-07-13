@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'ಗಲ್ಲಿ ವಿಳಾಸ',
+    'address_line'     => 'ಗಲ್ಲಿ ವಿಳಾಸ',
     'area'             => 'ಪ್ರದೇಶ',
     'city'             => 'ನಗರ',
     'country'          => 'ರಾಷ್ಟ್ರ/ಪ್ರದೇಶ',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Adresă fizică',
+    'address_line'     => 'Adresă fizică',
     'area'             => 'Zonă',
     'city'             => 'Oraș',
     'country'          => 'Țară/Regiune',

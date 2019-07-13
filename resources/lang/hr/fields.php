@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Ulica i kućni broj',
+    'address_line'     => 'Ulica i kućni broj',
     'area'             => 'Područje',
     'city'             => 'Grad',
     'country'          => 'Zemlja/Regija',

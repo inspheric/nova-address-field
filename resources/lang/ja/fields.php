@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => '番地',
+    'address_line'     => '番地',
     'area'             => '地区',
     'city'             => '市区町村',
     'country'          => '国/地域',

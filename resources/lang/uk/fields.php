@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Адреса',
+    'address_line'     => 'Адреса',
     'area'             => 'Область',
     'city'             => 'Місто',
     'country'          => 'Країна або регіон',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Adres',
+    'address_line'     => 'Adres',
     'area'             => 'Gebied',
     'city'             => 'Plaats',
     'country'          => 'Land/Regio',

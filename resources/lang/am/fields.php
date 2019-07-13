@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'የጎዳና አድራሻ',
+    'address_line'     => 'የጎዳና አድራሻ',
     'area'             => 'አካባቢ',
     'city'             => 'ከተማ',
     'country'          => 'አገር/ክልል',

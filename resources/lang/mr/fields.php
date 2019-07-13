@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'रस्त्याचे नाव',
+    'address_line'     => 'रस्त्याचे नाव',
     'area'             => 'क्षेत्र',
     'city'             => 'शहर',
     'country'          => 'देश/प्रदेश',

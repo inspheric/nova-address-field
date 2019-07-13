@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'آدرس',
+    'address_line'     => 'آدرس',
     'area'             => 'ناحیه',
     'city'             => 'شهر',
     'country'          => 'کشور/منطقه',

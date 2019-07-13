@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Morada',
+    'address_line'     => 'Morada',
     'area'             => 'Área',
     'city'             => 'Cidade',
     'country'          => 'País/Região',

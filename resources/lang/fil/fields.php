@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Address ng kalye',
+    'address_line'     => 'Address ng kalye',
     'area'             => 'Lugar',
     'city'             => 'Lungsod',
     'country'          => 'Bansa/Rehiyon',

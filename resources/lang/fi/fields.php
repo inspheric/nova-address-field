@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Katuosoite',
+    'address_line'     => 'Katuosoite',
     'area'             => 'Alue',
     'city'             => 'Kaupunki',
     'country'          => 'Maa/Alue',

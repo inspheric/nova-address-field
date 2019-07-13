@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Aadress',
+    'address_line'     => 'Aadress',
     'area'             => 'Ala',
     'city'             => 'Linn',
     'country'          => 'Riik/Regioon',

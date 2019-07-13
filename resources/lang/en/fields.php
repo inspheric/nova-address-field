@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Street Address',
+    'address_line'     => 'Street Address',
     'area'             => 'Area',
     'city'             => 'City',
     'country'          => 'Country/Region',

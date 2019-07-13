@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => '街道地址',
+    'address_line'     => '街道地址',
     'area'             => '區域',
     'city'             => '城市',
     'country'          => '國家/地區',

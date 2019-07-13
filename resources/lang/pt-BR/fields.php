@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Endereço de correspondência',
+    'address_line'     => 'Endereço de correspondência',
     'area'             => 'Área',
     'city'             => 'Cidade',
     'country'          => 'País/Região',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Indirizzo civico',
+    'address_line'     => 'Indirizzo civico',
     'area'             => 'Area',
     'city'             => 'Città',
     'country'          => 'Paese/Regione',

@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Alamat jalan',
+    'address_line'     => 'Alamat jalan',
     'area'             => 'Kawasan',
     'city'             => 'Bandar',
     'country'          => 'Negara/Rantau',

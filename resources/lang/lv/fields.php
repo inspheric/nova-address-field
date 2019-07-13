@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Adrese',
+    'address_line'     => 'Adrese',
     'area'             => 'Apgabals',
     'city'             => 'Pilsēta',
     'country'          => 'Valsts/Reģions',
