@@ -26,7 +26,7 @@ return [
     // 'sorting_code'     => '', // TODO
     'state'            => 'Stat',
     'suburb'           => 'Forstad',
-    'townland'         => 'Townland (Irland)',
+    'townland'         => 'Townland',
     'village_township' => 'Landsby/Township',
     'zip_code'         => 'Postnummer',
 

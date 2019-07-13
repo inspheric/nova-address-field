@@ -26,7 +26,7 @@ return [
     // 'sorting_code'     => '', // TODO
     'state'            => '시/도',
     'suburb'           => '시/군/구',
-    'townland'         => '타운랜드(아일랜드)',
+    'townland'         => '타운랜드',
     'village_township' => '빌리지/타운십',
     'zip_code'         => '우편번호',
 

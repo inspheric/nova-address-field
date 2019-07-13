@@ -9,7 +9,7 @@ return [
     'county'           => 'Okres',
     'department'       => 'Department',
     'district'         => 'Okres',
-    'do_si'            => 'Do/Si (administrativní oblast Koreje)',
+    'do_si'            => 'Do/Si',
     'eircode'          => 'Eircode',
     'emirate'          => 'Emirát',
     'island'           => 'Ostrov',

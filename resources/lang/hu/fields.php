@@ -26,7 +26,7 @@ return [
     // 'sorting_code'     => '', // TODO
     'state'            => 'Állam',
     'suburb'           => 'Külváros',
-    'townland'         => 'Helyi körzet (townland)',
+    'townland'         => 'Townland',
     'village_township' => 'Falu/Község',
     'zip_code'         => 'Irányítószám',
 

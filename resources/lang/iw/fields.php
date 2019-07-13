@@ -18,7 +18,7 @@ return [
     'organization'     => 'ארגון',
     'parish'           => 'פאריש',
     'pin_code'         => '‏קוד PIN',
-    'post_town'        => 'מיקוד עיר (בריטניה)',
+    'post_town'        => 'מיקוד עיר',
     'postal_code'      => 'מיקוד',
     'prefecture'       => 'תחום שיפוט',
     'province'         => 'פרובינציה',

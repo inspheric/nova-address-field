@@ -26,7 +26,7 @@ return [
     // 'sorting_code'     => '', // TODO
     'state'            => 'Πολιτεία',
     'suburb'           => 'Προάστιο',
-    'townland'         => 'Διοικητική περιοχή Ιρλανδίας (Townland)',
+    'townland'         => 'Townland',
     'village_township' => 'Χωριό/Δήμος',
     'zip_code'         => 'Ταχυδρομικός κώδικας',
 

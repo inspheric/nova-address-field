@@ -28,6 +28,6 @@ return [
     'suburb'           => 'Suburb',
     'townland'         => 'Townland',
     'village_township' => 'Village/Township',
-    'zip_code'         => 'Zip Code',
+    'zip_code'         => 'ZIP Code',
 
 ];
