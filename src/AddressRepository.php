@@ -9,7 +9,10 @@ use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Illuminate\Translation\Translator;
+
+use Laravel\Nova\Fields\Field;
 
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -129,16 +132,7 @@ class AddressRepository
         return $this->addressFormats->get($countryCode);
     }
 
-    /**
-     * Get the address format for displaying the fields.
-     *
-     * @param  string $countryCode
-     * @param  string|null $resource
-     * @param  string|null $attribute
-     *
-     * @return array
-     */
-    public function addressFormatForField(string $countryCode, string $resource = null, string $attribute = null)
+    public function addressFormatForField(string $countryCode, Field $field)
     {
         $format = $this->addressFormat($countryCode);
 
@@ -152,9 +146,6 @@ class AddressRepository
         $fields = $this->addressFieldsToArray($fields);
         $usedFields = $this->toInternalFields($format->getUsedFields());
 
-        $hidden = [];
-
-        $field = $this->getFieldFromResourceAttribute($resource, $attribute);
         $hidden = $field->getHiddenFields();
 
         $fields = array_values(array_diff($fields, $hidden));
@@ -165,9 +156,25 @@ class AddressRepository
         });
 
         return [
-            'format'      => $fields,
+            'fields'      => $fields,
             'labels'      => $labels,
         ];
+    }
+
+    /**
+     * Get the address format for displaying the fields.
+     *
+     * @param  string $countryCode
+     * @param  string|null $resource
+     * @param  string|null $attribute
+     *
+     * @return array
+     */
+    public function addressFormatForResourceAttribute(string $countryCode, string $resource = null, string $attribute = null)
+    {
+        $field = $this->getFieldFromResourceAttribute($resource, $attribute);
+
+        return $this->addressFormatForField($countryCode, $field);
     }
 
     /**
@@ -214,6 +221,11 @@ class AddressRepository
 
             if (method_exists($format, $method)) {
                 $type = $format->$method();
+
+                if (in_array($type, ['zip', 'pin', 'postal'], true)) {
+                    $type .= '_code';
+                }
+
                 $line = "address-field::fields.$type";
             }
         }
@@ -312,5 +324,12 @@ class AddressRepository
         }
 
         return Address::make('Address', 'address');
+    }
+
+    public function getOptionsList(Collection $options)
+    {
+        return $options->map(function ($label, $value) {
+            return is_array($label) ? $label + ['value' => $value] : ['label' => $label, 'value' => $value];
+        })->values()->all();
     }
 }

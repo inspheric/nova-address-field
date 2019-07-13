@@ -90,18 +90,26 @@ class Address extends Field
      *
      * @return array
      */
-    protected function fields()
+    protected function getFormat()
     {
         $repository = app('address-field.repository');
+        $countryCode = $this->getAddressValue('country_code');
 
-        return collect($repository->addressFormatForField($this->getAddressValue('country_code'))['format'])
-            ->except($this->hiddenFields)
-            ->map(function($field) use ($repository, $countryCode) {
-            return [
-                'attribute' => 'address_'.$field,
-                'name'      => $repository->label($field, $countryCode),
-            ];
-        })->values();
+        if ($countryCode) {
+
+            return $repository->addressFormatForField($countryCode, $this);
+
+            return collect($repository->addressFormatForField($countryCode)['format'])
+                ->except($this->hiddenFields)
+                ->map(function($field) use ($repository, $countryCode) {
+                    return [
+                        'attribute' => $field,
+                        'name'      => $repository->label($field, $countryCode),
+                    ];
+                })->values();
+        }
+
+        return [];
     }
 
     /**
@@ -114,15 +122,12 @@ class Address extends Field
         $repository = app('address-field.repository');
 
         return array_merge([
-            'fields' => $this->fields(),
             'country_code' => [
-                'attribute'       => $this->attribute.'_country_code',
+                'attribute'       => 'country_code',
                 'name'            => $repository->label('country'),
-                'value'           => $this->getAddressValue('country_code'),
-                'options'         => $repository->countries(true)->map(function ($label, $value) {
-                    return is_array($label) ? $label + ['value' => $value] : ['label' => $label, 'value' => $value];
-                })->values()->all(),
-            ]
+                // 'options'         => $repository->getOptionsList($repository->countries(true)),
+            ],
+            'format' => $this->getFormat(),
         ], parent::jsonSerialize());
     }
 
@@ -133,7 +138,7 @@ class Address extends Field
      */
     protected function getAddressValue(string $attribute)
     {
-        return 'AU'; //FIXME
+        return $this->value[$attribute] ?? null;
     }
 
 }
