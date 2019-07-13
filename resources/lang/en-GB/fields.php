@@ -2,7 +2,7 @@
 
 return [
 
-    'address_line_1'   => 'Street address',
+    'address_line_1'   => 'Street Address',
     'area'             => 'Area',
     'city'             => 'Town/City',
     'country'          => 'Country/Region',
@@ -17,17 +17,17 @@ return [
     'oblast'           => 'Oblast',
     'organization'     => 'Organisation',
     'parish'           => 'Parish',
-    'pin_code'         => 'PIN code',
+    'pin_code'         => 'PIN Code',
     'post_town'        => 'Postal town',
     'postal_code'      => 'Postcode',
     'prefecture'       => 'Prefecture',
     'province'         => 'Province',
     'recipient'        => 'Recipient',
-    'sorting_code'     => 'Sorting code',
+    'sorting_code'     => 'Sorting Code',
     'state'            => 'State',
     'suburb'           => 'Suburb',
     'townland'         => 'Townland',
     'village_township' => 'Village/Township',
-    'zip_code'         => 'ZIP code',
+    'zip_code'         => 'Zip Code',
 
 ];
