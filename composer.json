@@ -3,7 +3,9 @@
     "description": "A Laravel Nova Address field.",
     "keywords": [
         "laravel",
-        "nova"
+        "nova",
+        "address",
+        "field"
     ],
     "license": "MIT",
     "require": {
@@ -14,6 +16,9 @@
         "psr-4": {
             "Inspheric\\Fields\\": "src/"
         }
+    },
+    "suggest": {
+        "inspheric/addressing-lang": "Download address field translations."
     },
     "extra": {
         "laravel": {
