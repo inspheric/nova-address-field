@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Events\ServingNova;
 use Illuminate\Support\ServiceProvider;
-use Inspheric\AddressTool\Http\Middleware\Authorize;
 
 class AddressFieldServiceProvider extends ServiceProvider
 {
@@ -33,10 +32,10 @@ class AddressFieldServiceProvider extends ServiceProvider
             $this->routes();
         });
 
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'address');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'address-field');
 
         $this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/address'),
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/address-field'),
         ]);
     }
 
@@ -47,7 +46,7 @@ class AddressFieldServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('address.repository', function () {
+        $this->app->singleton('address-field.repository', function () {
 
             $locale = $this->app->getLocale() ?: 'en';
 

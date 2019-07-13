@@ -16,6 +16,6 @@ class CountriesController extends Controller
      */
     public function handle(Request $request)
     {
-        return app('address.repository')->countries(true);
+        return app('address-field.repository')->countries(true);
     }
 }

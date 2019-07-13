@@ -26,6 +26,6 @@ class AddressFormatsController extends Controller
         $resource = $request->get('resource');
         $attribute = $request->get('attribute');
 
-        return app('address.repository')->addressFormatForField($countryCode, $resource, $attribute);
+        return app('address-field.repository')->addressFormatForField($countryCode, $resource, $attribute);
     }
 }

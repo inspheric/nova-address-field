@@ -17,6 +17,6 @@ class SubdivisionsController extends Controller
      */
     public function handle(Request $request, ...$parents)
     {
-        return app('address.repository')->subdivisions($parents, true);
+        return app('address-field.repository')->subdivisions($parents, true);
     }
 }
