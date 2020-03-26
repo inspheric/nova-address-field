@@ -113,9 +113,9 @@ class Address extends Field
 
         return array_merge([
             'country_code' => [
-                'attribute'       => 'country_code',
-                'name'            => $repository->label('country'),
-                'options'         => $repository->getOptionsList($repository->countries(true)),
+                'attribute' => 'country_code',
+                'name'      => $repository->label('country'),
+                'options'   => $repository->getOptionsList($repository->countries(true)),
             ],
             'format' => $this->getFormat(),
         ], parent::jsonSerialize());
@@ -123,6 +123,7 @@ class Address extends Field
 
     /**
      * Get a value from the address.
+     *
      * @param  string $attribute
      * @return string
      */

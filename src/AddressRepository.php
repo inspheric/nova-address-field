@@ -3,20 +3,21 @@
 namespace Inspheric\Fields;
 
 use CommerceGuys\Addressing\AddressFormat\AddressField;
-use CommerceGuys\Addressing\AddressFormat\AddressFormatRepository;
-use CommerceGuys\Addressing\Country\CountryRepository;
-use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
+use CommerceGuys\Addressing\AddressFormat\AddressFormatRepositoryInterface;
+use CommerceGuys\Addressing\Country\CountryRepositoryInterface;
+use CommerceGuys\Addressing\Subdivision\SubdivisionRepositoryInterface;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
-use Illuminate\Translation\Translator;
-
+use Illuminate\Contracts\Translation\Translator;
+use InvalidArgumentException;
+use Inspheric\Fields\Address;
 use Laravel\Nova\Fields\Field;
-
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 use Laravel\Nova\Nova;
+use Laravel\Nova\Resource;
 
 class AddressRepository
 {
@@ -26,35 +27,35 @@ class AddressRepository
     protected $locale;
 
     /**
-     * @var \CommerceGuys\Addressing\Country\CountryRepository;
+     * @var CountryRepositoryInterface
      */
     protected $countries;
 
     /**
-     * @var \CommerceGuys\Addressing\Country\SubdivisionRepository;
+     * @var SubdivisionRepositoryInterface
      */
     protected $subdivisions;
 
     /**
-     * @var \CommerceGuys\Addressing\Country\AddressFormatRepository;
+     * @var AddressFormatRepositoryInterface
      */
     protected $addressFormats;
 
     /**
-     * @var \Illuminate\Translation\Translator;
+     * @var Translator
      */
     protected $translator;
 
     /**
      * Constructor.
      *
-     * @param string                                                          $locale
-     * @param \CommerceGuys\Addressing\Country\CountryRepository              $countries
-     * @param \CommerceGuys\Addressing\Subdivision\SubdivisionRepository      $subdivisions
-     * @param \CommerceGuys\Addressing\AddressFormat\AddressFormatRepository  $addressFormats
-     * @param \Illuminate\Translation\Translator                              $translator
+     * @param string  $locale
+     * @param CountryRepositoryInterface  $countries
+     * @param SubdivisionRepositoryInterface  $subdivisions
+     * @param AddressFormatRepositoryInterface  $addressFormats
+     * @param Translator  $translator
      */
-    public function __construct(string $locale, CountryRepository $countries, SubdivisionRepository $subdivisions, AddressFormatRepository $addressFormats, Translator $translator)
+    public function __construct(string $locale, CountryRepositoryInterface $countries, SubdivisionRepositoryInterface $subdivisions, AddressFormatRepositoryInterface $addressFormats, Translator $translator)
     {
         $this->locale = $locale;
         $this->countries = $countries;
@@ -65,9 +66,11 @@ class AddressRepository
 
     /**
      * Get all countries.
+     *
      * @param  bool $list
      * @param  string|null  $locale
-     * @return \CommerceGuys\Addressing\Country\Country[]
+     *
+     * @return Collection|Country[]
      */
     public function countries(bool $list = false, string $locale = null)
     {
@@ -76,9 +79,11 @@ class AddressRepository
 
     /**
      * Get a country.
+     *
      * @param  string $countryCode
      * @param  string|null $locale
-     * @return \CommerceGuys\Addressing\Country\Country|null
+     *
+     * @return Country|null
      */
     public function country(string $countryCode, string $locale = null)
     {
@@ -86,11 +91,13 @@ class AddressRepository
     }
 
     /**
-     * Get all subdivisions.
+     * Get all subdivisions for a country or parent subdivision(s).
+     *
      * @param  string|string[]  $parents
      * @param  bool  $list
      * @param  string|null  $locale
-     * @return \CommerceGuys\Addressing\Subdivision\Subdivision[]
+     *
+     * @return Collection|Subdivision[]
      */
     public function subdivisions($parents, bool $list = false, string $locale = null)
     {
@@ -101,10 +108,12 @@ class AddressRepository
 
     /**
      * Get a subdivision.
+     *
      * @param  string $code
      * @param  string|string[]  $parents
      * @param  string|null $locale
-     * @return \CommerceGuys\Addressing\Subdivision\Subdivision|null
+     *
+     * @return Subdivision|null
      */
     public function subdivision(string $code, $parents, string $locale = null)
     {
@@ -115,7 +124,8 @@ class AddressRepository
 
     /**
      * Get all address formats.
-     * @return \CommerceGuys\Addressing\AddressFormat\AddressFormat
+     *
+     * @return Collection|AddressFormat[]
      */
     public function addressFormats()
     {
@@ -124,40 +134,65 @@ class AddressRepository
 
     /**
      * Get an address format.
+     *
      * @param  string $countryCode
-     * @return \CommerceGuys\Addressing\AddressFormat\AddressFormat[]
+     *
+     * @return AddressFormat
      */
     public function addressFormat(string $countryCode)
     {
         return $this->addressFormats->get($countryCode);
     }
 
-    public function addressFormatForField(string $countryCode, Field $field)
+    /**
+     * Get the address format for a given locale.
+     *
+     * @param  string $countryCode
+     * @param  string|null $locale
+     *
+     * @return array
+     */
+    public function addressFormatForLocale(string $countryCode, string $locale = null)
     {
         $format = $this->addressFormat($countryCode);
 
-        if ($format->getLocalFormat() && substr($this->locale, 0, 2) == substr($format->getLocale(), 0, 2)) {
+        if ($format->getLocalFormat() && substr($locale ?: $this->locale, 0, 2) == substr($format->getLocale(), 0, 2)) {
             $fields = $format->getLocalFormat();
-        }
-        else {
+        } else {
             $fields = $format->getFormat();
         }
 
         $fields = $this->addressFieldsToArray($fields);
         $usedFields = $this->toInternalFields($format->getUsedFields());
 
-        $hidden = $field->getHiddenFields();
-
-        $fields = array_values(array_diff($fields, $hidden));
-        $usedFields = array_values(array_diff($usedFields, $hidden));
-
-        $labels = collect($usedFields)->mapWithKeys(function($field) use ($countryCode) {
+        $labels = collect($usedFields)->mapWithKeys(function ($field) use ($countryCode) {
             return [$field => $this->label($field, $countryCode)];
-        });
+        })->all();
 
         return [
-            'fields'      => $fields,
-            'labels'      => $labels,
+            'fields' => $fields,
+            'labels' => $labels,
+        ];
+    }
+
+    /**
+     * Get the address format for a given field.
+     *
+     * @param  string $countryCode
+     * @param  Address $field
+     * @param  string|null $locale
+     *
+     * @return array
+     */
+    public function addressFormatForField(string $countryCode, Address $field, string $locale = null)
+    {
+        $format = $this->addressFormatForLocale($countryCode, $locale);
+
+        $hidden = $field->getHiddenFields();
+
+        return [
+            'fields' => array_values(array_diff($format['fields'], $hidden)),
+            'labels' => Arr::except($format['labels'], $hidden),
         ];
     }
 
@@ -165,16 +200,17 @@ class AddressRepository
      * Get the address format for displaying the fields.
      *
      * @param  string $countryCode
-     * @param  string|null $resource
+     * @param  Resource|string|null $resource
      * @param  string|null $attribute
+     * @param  string|null $locale
      *
      * @return array
      */
-    public function addressFormatForResourceAttribute(string $countryCode, string $resource = null, string $attribute = null)
+    public function addressFormatForResourceAttribute(string $countryCode, $resource = null, string $attribute = null, string $locale = null)
     {
         $field = $this->getFieldFromResourceAttribute($resource, $attribute);
 
-        return $this->addressFormatForField($countryCode, $field);
+        return $this->addressFormatForField($countryCode, $field, $locale);
     }
 
     /**
@@ -186,7 +222,6 @@ class AddressRepository
      */
     protected function addressFieldsToArray(string $formatString)
     {
-        $addressFields = [];
         $expression = '/\%(' . implode('|', AddressField::getAll()) . ')/';
 
         preg_match_all($expression, $formatString, $foundTokens);
@@ -195,7 +230,7 @@ class AddressRepository
     }
 
     /**
-     * Get the label for a subdivision.
+     * Get the label for an address field.
      *
      * @param  string $field
      * @param  string|null $countryCode
@@ -203,7 +238,7 @@ class AddressRepository
      *
      * @return string
      */
-    public function label(string $field, string $countryCode = null, $locale = null)
+    public function label(string $field, string $countryCode = null, string $locale = null)
     {
         $locale = $locale ?: $this->locale;
 
@@ -302,14 +337,19 @@ class AddressRepository
     /**
      * Get a field definition from a resource and attribute.
      *
-     * @param  string|null $uriKey
+     * @param  Resource|string|null $resource
      * @param  string|null $attribute
      *
-     * @return \Laravel\Nova\Fields\Field
+     * @return Address
+     * @throws InvalidArgumentException
      */
-    public function getFieldFromResourceAttribute(?string $uriKey, ?string $attribute)
+    public function getFieldFromResourceAttribute($resource = null, string $attribute = null)
     {
-        if ($uriKey && $resource = Nova::resourceInstanceForKey($uriKey)) {
+        if ($resource && is_string($resource)) {
+            $resource = Nova::resourceInstanceForKey($resource);
+        }
+
+        if ($resource instanceof Resource) {
             if ($attribute) {
                 if ($field = $resource->availableFields(new NovaRequest())->findFieldByAttribute($attribute)) {
                     return $field;
@@ -323,12 +363,18 @@ class AddressRepository
             }
         }
 
-        return Address::make('Address', 'address');
+        return new Address('Address', 'address');
     }
 
-    public function getOptionsList(Collection $options)
+    /**
+     * Get the select field options.
+     *
+     * @param  iterable $options
+     * @return array
+     */
+    public function getOptionsList(iterable $options)
     {
-        return $options->map(function ($label, $value) {
+        return collect($options)->map(function ($label, $value) {
             return is_array($label) ? $label + ['value' => $value] : ['label' => $label, 'value' => $value];
         })->values()->all();
     }

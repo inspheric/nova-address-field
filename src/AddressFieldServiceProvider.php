@@ -3,9 +3,7 @@
 namespace Inspheric\Fields;
 
 use CommerceGuys\Addressing\AddressFormat\AddressFormatRepository;
-
 use CommerceGuys\Addressing\Country\CountryRepository;
-
 use CommerceGuys\Addressing\Subdivision\SubdivisionRepository;
 
 use Illuminate\Support\Facades\Route;

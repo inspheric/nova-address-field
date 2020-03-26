@@ -9,12 +9,27 @@
     ],
     "license": "MIT",
     "require": {
-        "php": ">=7.1.0",
-        "commerceguys/addressing": "^v1.0.5"
+        "php": "^7.2.5",
+        "commerceguys/addressing": "^v1.0.5",
+        "laravel/nova": "^3.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^5.1.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "repositories": [{
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Inspheric\\Fields\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Inspheric\\Fields\\Test\\": "tests/"
         }
     },
     "suggest": {

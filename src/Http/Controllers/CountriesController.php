@@ -3,6 +3,7 @@
 namespace Inspheric\Fields\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
 class CountriesController extends Controller
@@ -10,9 +11,9 @@ class CountriesController extends Controller
     /**
      * Invoke the controller.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function handle(Request $request)
     {
