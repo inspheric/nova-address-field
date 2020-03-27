@@ -189,6 +189,11 @@ Nova.booting(function (Vue, router, store) {
     Vue.component('index-address-field', __webpack_require__(3));
     Vue.component('detail-address-field', __webpack_require__(6));
     Vue.component('form-address-field', __webpack_require__(9));
+
+    Vue.component('form-address-field-text-input', __webpack_require__(21));
+    Vue.component('form-address-field-small-text-input', __webpack_require__(24));
+    Vue.component('form-address-field-textarea-input', __webpack_require__(27));
+    Vue.component('form-address-field-select-input', __webpack_require__(30));
 });
 
 /***/ }),
@@ -522,6 +527,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
 
 
 
@@ -531,21 +537,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
     props: ['resourceName', 'resourceId', 'field'],
 
     methods: {
-        /*
-         * Set the initial, internal value for the field.
-         */
-        // setInitialValue() {
-        // this.value = this.field.value || { country_code: null }
-        // },
-
-        /**
-         * Fill the given FormData object with the field's internal value.
-         */
-        // fill(formData) {
-        //     console.log(this.value)
-        //     formData.append(this.field.attribute, this.value || {})
-        // },
-
         fill: function fill(formData) {
             formData.append(this.field.attribute, JSON.stringify(this.value || {}));
         },
@@ -11759,40 +11750,19 @@ var render = function() {
                         }
                       },
                       [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.field.value[subfield.attribute],
-                              expression: "field.value[subfield.attribute]"
-                            }
-                          ],
-                          staticClass:
-                            "w-full form-control form-input form-input-bordered",
-                          attrs: {
-                            id: _vm.field.attribute + "_" + subfield.attribute,
-                            dusk:
-                              _vm.field.attribute + "_" + subfield.attribute,
-                            disabled: _vm.isReadonly
-                          },
-                          domProps: {
-                            value: _vm.field.value[subfield.attribute]
-                          },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(
-                                _vm.field.value,
-                                subfield.attribute,
-                                $event.target.value
-                              )
+                        _c(
+                          "form-address-field-" + subfield.component + "-input",
+                          {
+                            tag: "component",
+                            attrs: {
+                              field: _vm.field,
+                              subfield: subfield,
+                              disabled: _vm.isReadOnly
                             }
                           }
-                        })
-                      ]
+                        )
+                      ],
+                      1
                     )
                   ]
                 )
@@ -11820,6 +11790,465 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(22)
+/* template */
+var __vue_template__ = __webpack_require__(23)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/TextInput.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b8492b7c", Component.options)
+  } else {
+    hotAPI.reload("data-v-b8492b7c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['field', 'subfield', 'disabled']
+});
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("input", {
+    directives: [
+      {
+        name: "model",
+        rawName: "v-model",
+        value: _vm.field.value[_vm.subfield.attribute],
+        expression: "field.value[subfield.attribute]"
+      }
+    ],
+    staticClass: "w-full form-control form-input form-input-bordered",
+    attrs: {
+      id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      disabled: _vm.disabled
+    },
+    domProps: { value: _vm.field.value[_vm.subfield.attribute] },
+    on: {
+      input: function($event) {
+        if ($event.target.composing) {
+          return
+        }
+        _vm.$set(_vm.field.value, _vm.subfield.attribute, $event.target.value)
+      }
+    }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b8492b7c", module.exports)
+  }
+}
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(25)
+/* template */
+var __vue_template__ = __webpack_require__(26)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/SmallTextInput.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1ca36981", Component.options)
+  } else {
+    hotAPI.reload("data-v-1ca36981", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['field', 'subfield', 'disabled']
+});
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("input", {
+    directives: [
+      {
+        name: "model",
+        rawName: "v-model",
+        value: _vm.field.value[_vm.subfield.attribute],
+        expression: "field.value[subfield.attribute]"
+      }
+    ],
+    staticClass: "w-1/2 form-control form-input form-input-bordered",
+    attrs: {
+      id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      disabled: _vm.disabled
+    },
+    domProps: { value: _vm.field.value[_vm.subfield.attribute] },
+    on: {
+      input: function($event) {
+        if ($event.target.composing) {
+          return
+        }
+        _vm.$set(_vm.field.value, _vm.subfield.attribute, $event.target.value)
+      }
+    }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1ca36981", module.exports)
+  }
+}
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(28)
+/* template */
+var __vue_template__ = __webpack_require__(29)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/TextareaInput.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28ef2f56", Component.options)
+  } else {
+    hotAPI.reload("data-v-28ef2f56", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['field', 'subfield', 'disabled']
+});
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("textarea", {
+    directives: [
+      {
+        name: "model",
+        rawName: "v-model",
+        value: _vm.field.value[_vm.subfield.attribute],
+        expression: "field.value[subfield.attribute]"
+      }
+    ],
+    staticClass:
+      "w-full form-control form-input form-input-bordered py-3 h-auto min-h-input",
+    attrs: {
+      id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+      disabled: _vm.disabled,
+      rows: "3"
+    },
+    domProps: { value: _vm.field.value[_vm.subfield.attribute] },
+    on: {
+      input: function($event) {
+        if ($event.target.composing) {
+          return
+        }
+        _vm.$set(_vm.field.value, _vm.subfield.attribute, $event.target.value)
+      }
+    }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-28ef2f56", module.exports)
+  }
+}
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(0)
+/* script */
+var __vue_script__ = __webpack_require__(31)
+/* template */
+var __vue_template__ = __webpack_require__(32)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/components/SelectInput.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2ff22413", Component.options)
+  } else {
+    hotAPI.reload("data-v-2ff22413", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 31 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['field', 'subfield', 'disabled']
+});
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "select-control",
+    {
+      staticClass: "w-full form-control form-select",
+      attrs: {
+        id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+        dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+        disabled: _vm.disabled,
+        options: []
+      },
+      model: {
+        value: _vm.field.value[_vm.subfield.attribute],
+        callback: function($$v) {
+          _vm.$set(_vm.field.value, _vm.subfield.attribute, $$v)
+        },
+        expression: "field.value[subfield.attribute]"
+      }
+    },
+    [
+      _c("option", { attrs: { value: "", selected: "" } }, [
+        _vm._v(_vm._s(_vm.__("Choose an option")))
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-2ff22413", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

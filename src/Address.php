@@ -224,11 +224,9 @@ class Address extends Field
         if ($request->exists($requestAttribute)) {
             $value = json_decode($request[$requestAttribute], true);
 
-            // dump($requestAttribute, $request[$requestAttribute], $value);
-
             if ($countryCode = $value['country_code'] ?? null) {
-                $fields = $this->getUsedFields($countryCode);
-                $fields = $fields['fields'];
+                $fields = $this->getFormat($countryCode);
+                $fields = array_keys($fields['fields']);
                 $fields[] = 'country_code';
 
                 $value = Arr::only($value, $fields);

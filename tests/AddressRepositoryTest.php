@@ -114,14 +114,14 @@ class AddressRepositoryTest extends TestCase
         $this->assertArrayHasKey('fields', $format);
         $this->assertArrayHasKey('country_label', $format);
 
-        $this->assertArrayContainsFragment(['attribute' => 'dependent_locality'], $format['fields']);
-        $this->assertArrayNotContainsFragment(['attribute' => 'recipient'], $format['fields']);
+        $this->assertArrayHasKey('dependent_locality', $format['fields']);
+        $this->assertArrayNotHasKey('recipient', $format['fields']);
 
         $field = Address::make('Home Address', 'home_address')->withRecipient();
 
         $format = $this->repository->addressFormatForField('CN', $field);
 
-        $this->assertArrayContainsFragment(['attribute' => 'recipient'], $format['fields']);
+        $this->assertArrayHasKey('recipient', $format['fields']);
     }
 
     /**
@@ -149,11 +149,11 @@ class AddressRepositoryTest extends TestCase
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'home_address');
 
-        $this->assertArrayNotContainsFragment(['attribute' => 'organization'], $format['fields']);
+        $this->assertArrayNotHasKey('organization', $format['fields']);
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'work_address');
 
-        $this->assertArrayContainsFragment(['attribute' => 'organization'], $format['fields']);
+        $this->assertArrayHasKey('organization', $format['fields']);
     }
 
     /**

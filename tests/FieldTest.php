@@ -36,9 +36,9 @@ class FieldTest extends TestCase
             'label' => 'State',
         ], $format['fields']);
 
-        $this->assertArrayNotContainsFragment(['attribute' => 'recipient'], $format['fields']);
+        $this->assertArrayNotHasKey('recipient', $format['fields']);
 
-        $this->assertArrayNotContainsFragment(['attribute' => 'organization'], $format['fields']);
+        $this->assertArrayNotHasKey('organization', $format['fields']);
     }
 
     /**
@@ -51,7 +51,7 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayContainsFragment(['attribute' => 'administrative_area'], $format['fields']);
+        $this->assertArrayHasKey('administrative_area', $format['fields']);
 
         $this->assertCount(4, $format['fields']);
     }
@@ -67,7 +67,7 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayNotContainsFragment(['attribute' => 'administrative_area'], $format['fields']);
+        $this->assertArrayNotHasKey('administrative_area', $format['fields']);
 
         $this->assertCount(3, $format['fields']);
     }
@@ -82,8 +82,8 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayNotContainsFragment(['attribute' => 'administrative_area'], $format['fields']);
-        $this->assertArrayNotContainsFragment(['attribute' => 'postal_code'], $format['fields']);
+        $this->assertArrayNotHasKey('administrative_area', $format['fields']);
+        $this->assertArrayNotHasKey('postal_code', $format['fields']);
 
         $this->assertCount(2, $format['fields']);
     }
@@ -98,8 +98,8 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayContainsFragment(['attribute' => 'recipient'], $format['fields']);
-        $this->assertArrayNotContainsFragment(['attribute' => 'administrative_area'], $format['fields']);
+        $this->assertArrayHasKey('recipient', $format['fields']);
+        $this->assertArrayNotHasKey('administrative_area', $format['fields']);
 
         $this->assertCount(4, $format['fields']);
     }
@@ -114,7 +114,7 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayContainsFragment(['attribute' => 'recipient'], $format['fields']);
+        $this->assertArrayHasKey('recipient', $format['fields']);
     }
 
     /**
@@ -127,7 +127,7 @@ class FieldTest extends TestCase
 
         $format = $field->getFormat();
 
-        $this->assertArrayContainsFragment(['attribute' => 'organization'], $format['fields']);
+        $this->assertArrayHasKey('organization', $format['fields']);
     }
 
     /**

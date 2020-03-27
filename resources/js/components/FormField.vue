@@ -67,13 +67,14 @@
                     <div class="w-2/5 py-4 pl-8"
                         :class="{ 'pb-0': index == field.format.fields.length - 1 }"
                     >
-                        <input
+                        <!-- <input
                             class="w-full form-control form-input form-input-bordered"
                             :id="`${field.attribute}_${subfield.attribute}`"
                             :dusk="`${field.attribute}_${subfield.attribute}`"
                             v-model="field.value[subfield.attribute]"
                             :disabled="isReadonly"
-                        />
+                        /> -->
+                        <component :is="`form-address-field-${subfield.component}-input`" :field="field" :subfield="subfield" :disabled="isReadOnly" />
                         <!-- v-bind="extraAttributes" -->
                         <!-- :class="errorClasses" -->
 
@@ -113,20 +114,6 @@ export default {
     props: ['resourceName', 'resourceId', 'field'],
 
     methods: {
-        /*
-         * Set the initial, internal value for the field.
-         */
-        // setInitialValue() {
-            // this.value = this.field.value || { country_code: null }
-        // },
-
-        /**
-         * Fill the given FormData object with the field's internal value.
-         */
-        // fill(formData) {
-        //     console.log(this.value)
-        //     formData.append(this.field.attribute, this.value || {})
-        // },
 
         fill(formData) {
             formData.append(this.field.attribute, JSON.stringify(this.value || {}))

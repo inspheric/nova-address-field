@@ -36,8 +36,8 @@ class AddressRepository
      */
     const FIELD_COMPONENTS = [
         AddressField::ADDRESS_LINE1 => 'textarea',
-        AddressField::POSTAL_CODE   => 'small-text',
-        AddressField::SORTING_CODE  => 'small-text',
+        AddressField::POSTAL_CODE   => 'small-text', //TODO
+        AddressField::SORTING_CODE  => 'small-text', //TODO
     ];
 
     /**
@@ -214,8 +214,10 @@ class AddressRepository
             return $component;
         }
 
-        if (static::SUBDIVISION_DEPTHS[$subfield] ?? 0 >= $format->getSubdivisionDepth()) {
-            return 'select';
+        if (isset(static::SUBDIVISION_DEPTHS[$subfield])) {
+            if ($format->getSubdivisionDepth() >= static::SUBDIVISION_DEPTHS[$subfield]) {
+                return 'select';
+            }
         }
 
         return 'text';
@@ -348,13 +350,13 @@ class AddressRepository
     public function toInternalField(string $field)
     {
         switch ($field) {
-            case 'givenName':
-            case 'addressLine2':
+            case AddressField::GIVEN_NAME:
+            case AddressField::ADDRESS_LINE2:
                 return;
                 break;
-            case 'addressLine1':
+            case AddressField::ADDRESS_LINE1:
                 return 'address_line';
-            case 'familyName':
+            case AddressField::FAMILY_NAME:
                 return 'recipient';
         }
 
@@ -392,9 +394,9 @@ class AddressRepository
     {
         switch ($field) {
             case 'address_line':
-                return 'addressLine1';
+                return AddressField::ADDRESS_LINE1;
             case 'recipient':
-                return 'familyName';
+                return AddressField::FAMILY_NAME;
         }
 
         return Str::camel($field);

@@ -70,7 +70,7 @@ class ControllersTest extends TestCase
         ];
 
         foreach ($fields as $field) {
-            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+            $this->assertArrayHasKey($field, $format['fields']);
         }
 
         $this->assertCount(4, $format['fields']);
@@ -96,7 +96,7 @@ class ControllersTest extends TestCase
         ];
 
         foreach ($fields as $field) {
-            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+            $this->assertArrayHasKey($field, $format['fields']);
         }
 
         $this->assertCount(4, $format['fields']);
@@ -121,7 +121,7 @@ class ControllersTest extends TestCase
         ];
 
         foreach ($fields as $field) {
-            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+            $this->assertArrayHasKey($field, $format['fields']);
         }
 
         $this->assertCount(4, $format['fields']);
@@ -147,7 +147,7 @@ class ControllersTest extends TestCase
         ];
 
         foreach ($fields as $field) {
-            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+            $this->assertArrayHasKey($field, $format['fields']);
         }
 
         $this->assertCount(6, $format['fields']);
