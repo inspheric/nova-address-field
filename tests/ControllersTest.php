@@ -2,55 +2,23 @@
 
 namespace Tests;
 
-use Illuminate\Auth\Authenticatable;
+use Illuminate\Http\Request;
+use Inspheric\Fields\Http\Controllers\AddressFormatsController;
+use Inspheric\Fields\Http\Controllers\CountriesController;
+use Inspheric\Fields\Http\Controllers\SubdivisionsController;
 use Laravel\Nova\Nova;
-use Laravel\Nova\NovaCoreServiceProvider;
-use Laravel\Nova\Tests\TestServiceProvider;
-use Mockery;
 
 class ControllersTest extends TestCase
 {
-    /**
-     * Get package providers.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return array
-     */
-    protected function getPackageProviders($app)
+    protected $requestParams = [];
+
+    public function mockGet(string $controller, ...$params)
     {
-        return array_merge(parent::getPackageProviders($app), [
-            NovaCoreServiceProvider::class,
-            TestServiceProvider::class,
-        ]);
-    }
+        $request = new Request();
 
-    /**
-     * @inheritDoc
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
+        $return = (new $controller)->handle($request->merge($this->requestParams), ...$params);
 
-        $this->authenticate();
-    }
-
-    /**
-     * Authenticate as an anonymous user.
-     *
-     * @return $this
-     */
-    protected function authenticate()
-    {
-        $user = Mockery::mock(Authenticatable::class);
-
-        $user->shouldReceive('getAuthIdentifier')->andReturn(1);
-        $user->shouldReceive('getKey')->andReturn(1);
-
-        $this->app['auth']->guard(null)->setUser($user);
-        $this->app['auth']->shouldUse(null);
-
-        return $this;
+        return collect($return)->all();
     }
 
     /**
@@ -58,9 +26,11 @@ class ControllersTest extends TestCase
      */
     public function the_controller_returns_a_list_of_countries()
     {
-        $countries = $this->get('nova-vendor/address-field/countries');
+        // 'nova-vendor/address-field/countries'
+        $countries = $this->mockGet(CountriesController::class);
 
-        $countries->assertJsonFragment(['BR' => 'Brazil']);
+        $this->assertArrayHasKey('BR', $countries);
+        $this->assertSame('Brazil', $countries['BR']);
     }
 
     /**
@@ -68,9 +38,11 @@ class ControllersTest extends TestCase
      */
     public function the_controller_returns_a_list_of_subdivisions_for_a_country()
     {
-        $subdivisions = $this->get('nova-vendor/address-field/subdivisions/BR');
+        // 'nova-vendor/address-field/subdivisions/BR'
+        $subdivisions = $this->mockGet(SubdivisionsController::class, 'BR');
 
-        $subdivisions->assertJsonFragment(['RJ' => 'Rio de Janeiro']);
+        $this->assertArrayHasKey('RJ', $subdivisions);
+        $this->assertSame('Rio de Janeiro', $subdivisions['RJ']);
     }
 
     /**
@@ -78,9 +50,11 @@ class ControllersTest extends TestCase
      */
     public function the_controller_returns_a_list_of_subdivisions_for_a_subdivision()
     {
-        $subdivisions = $this->get('nova-vendor/address-field/subdivisions/BR/RJ');
+        // 'nova-vendor/address-field/subdivisions/BR/RJ'
+        $subdivisions = $this->mockGet(SubdivisionsController::class, 'BR', 'RJ');
 
-        $subdivisions->assertJsonFragment(['Rio de Janeiro' => 'Rio de Janeiro']);
+        $this->assertArrayHasKey('Rio de Janeiro', $subdivisions);
+        $this->assertSame('Rio de Janeiro', $subdivisions['Rio de Janeiro']);
     }
 
     /**
@@ -88,13 +62,18 @@ class ControllersTest extends TestCase
      */
     public function the_controller_returns_an_address_format_for_a_country()
     {
-        $format = $this->get('nova-vendor/address-field/formats/AU');
+        // 'nova-vendor/address-field/formats/AU'
+        $format = $this->mockGet(AddressFormatsController::class, 'AU');
 
-        $format->assertJsonFragment(['fields' => [
+        $fields = [
             'address_line', 'locality', 'administrative_area', 'postal_code',
-        ]]);
+        ];
 
-        $format->assertJsonCount(4, 'fields');
+        foreach ($fields as $field) {
+            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+        }
+
+        $this->assertCount(4, $format['fields']);
     }
 
     /**
@@ -104,13 +83,23 @@ class ControllersTest extends TestCase
     {
         Nova::resources([DefaultResource::class]);
 
-        $format = $this->get('nova-vendor/address-field/formats/AU?resource=contact_addresses&attribute=home_address');
+        // 'nova-vendor/address-field/formats/AU?resource=contact_addresses&attribute=home_address'
+        $this->requestParams = [
+            'resource'  => 'contact_addresses',
+            'attribute' => 'home_address',
+        ];
 
-        $format->assertJsonFragment(['fields' => [
+        $format = $this->mockGet(AddressFormatsController::class, 'AU');
+
+        $fields = [
             'address_line', 'locality', 'administrative_area', 'postal_code',
-        ]]);
+        ];
 
-        $format->assertJsonCount(4, 'fields');
+        foreach ($fields as $field) {
+            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+        }
+
+        $this->assertCount(4, $format['fields']);
     }
 
     /**
@@ -120,29 +109,22 @@ class ControllersTest extends TestCase
     {
         Nova::resources([DefaultResource::class]);
 
-        $format = $this->get('nova-vendor/address-field/formats/AU?resource=contact_addresses');
+        // 'nova-vendor/address-field/formats/AU?resource=contact_addresses'
+        $this->requestParams = [
+            'resource'  => 'contact_addresses',
+        ];
 
-        $format->assertJsonFragment(['fields' => [
+        $format = $this->mockGet(AddressFormatsController::class, 'AU');
+
+        $fields = [
             'address_line', 'locality', 'administrative_area', 'postal_code',
-        ]]);
+        ];
 
-        $format->assertJsonCount(4, 'fields');
-    }
+        foreach ($fields as $field) {
+            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+        }
 
-    /**
-     * @test
-     */
-    public function the_controller_returns_a_defualt_address_format_without_resource_or_attribute()
-    {
-        Nova::resources([DefaultResource::class]);
-
-        $format = $this->get('nova-vendor/address-field/formats/AU');
-
-        $format->assertJsonFragment(['fields' => [
-            'address_line', 'locality', 'administrative_area', 'postal_code',
-        ]]);
-
-        $format->assertJsonCount(4, 'fields');
+        $this->assertCount(4, $format['fields']);
     }
 
     /**
@@ -152,12 +134,22 @@ class ControllersTest extends TestCase
     {
         Nova::resources([DefaultResource::class]);
 
-        $format = $this->get('nova-vendor/address-field/formats/AU?resource=contact_addresses&attribute=work_address');
+        // 'nova-vendor/address-field/formats/AU?resource=contact_addresses&attribute=work_address'
+        $this->requestParams = [
+            'resource'  => 'contact_addresses',
+            'attribute' => 'work_address',
+        ];
 
-        $format->assertJsonFragment(['fields' => [
+        $format = $this->mockGet(AddressFormatsController::class, 'AU');
+
+        $fields = [
             'organization', 'recipient', 'address_line', 'locality', 'administrative_area', 'postal_code',
-        ]]);
+        ];
 
-        $format->assertJsonCount(6, 'fields');
+        foreach ($fields as $field) {
+            $this->assertArrayContainsFragment(['attribute' => $field], $format['fields']);
+        }
+
+        $this->assertCount(6, $format['fields']);
     }
 }

@@ -37,7 +37,7 @@ abstract class TestCase extends OrchestraTestCase
         ];
     }
 
-    protected function assertArrayContainsKeyValue(array $expected, array $array, bool $not = false)
+    protected function assertArrayContainsFragment(array $expected, array $array, bool $not = false)
     {
         $filtered = Arr::where($array, function ($item) use ($expected) {
             $found = true;
@@ -49,18 +49,21 @@ abstract class TestCase extends OrchestraTestCase
 
         $found = count($filtered) > 0;
 
-        $expectedFormat = (new Exporter())->export($expected);
+        $exporter = new Exporter();
+
+        $expectedFormat = $exporter->export($expected);
+        $arrayFormat = $exporter->export($array);
 
         if ($not) {
-            $this->assertFalse($found, "Failed asserting that the array does not contain $expectedFormat.");
+            $this->assertFalse($found, "Failed asserting that the array does not contain $expectedFormat. Found $arrayFormat.");
         } else {
-            $this->assertTrue($found, "Failed asserting that the array contains $expectedFormat.");
+            $this->assertTrue($found, "Failed asserting that the array contains $expectedFormat. Found $arrayFormat.");
         }
     }
 
-    protected function assertArrayNotContainsKeyValue(array $expected, array $array)
+    protected function assertArrayNotContainsFragment(array $expected, array $array)
     {
-        $this->assertArrayContainsKeyValue($expected, $array, true);
+        $this->assertArrayContainsFragment($expected, $array, true);
     }
 }
 
