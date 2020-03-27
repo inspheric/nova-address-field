@@ -111,14 +111,12 @@ class Address extends Field
 
         $repository = app('address-field.repository');
 
-        $fields = [];
-
         if ($countryCode) {
-            $fields = $repository->addressFormatForField($countryCode, $this);
+            return $repository->addressFormatForField($countryCode, $this);
         }
 
         return [
-            'fields'        => $fields,
+            'fields'        => [],
             'country_label' => $repository->label('country'),
         ];
     }
