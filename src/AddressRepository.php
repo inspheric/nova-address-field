@@ -190,9 +190,15 @@ class AddressRepository
 
         $hidden = $field->getHiddenFields();
 
+        $fields = array_values(array_diff($format['fields'], $hidden));
+        $labels = Arr::except($format['labels'], $hidden);
+        $labels['country_code'] = $this->label('country');
+
         return [
-            'fields' => array_values(array_diff($format['fields'], $hidden)),
-            'labels' => Arr::except($format['labels'], $hidden),
+            // 'country_code' => $countryCode,
+            // 'locale'       => $this->locale,
+            'fields'       => $fields,
+            'labels'       => $labels,
         ];
     }
 

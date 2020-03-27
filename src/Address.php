@@ -2,7 +2,9 @@
 
 namespace Inspheric\Fields;
 
+use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Address extends Field
 {
@@ -22,6 +24,13 @@ class Address extends Field
         'organization',
         'recipient',
     ];
+
+    /**
+     * Limited countries.
+     *
+     * @var string[]
+     */
+    protected $limitCountries = [];
 
     /**
      * Include the organization field.
@@ -66,7 +75,7 @@ class Address extends Field
      */
     public function setHiddenFields(array $fields)
     {
-        $this->hiddenFields = $fields;
+        $this->hiddenFields = array_merge($fields, array_intersect($this->hiddenFields, ['recipient', 'organization']));
 
         return $this;
     }
@@ -88,18 +97,28 @@ class Address extends Field
     /**
      * Get the fields to be shown.
      *
+     * @param string|null $countryCode
+     *
      * @return array
      */
-    protected function getFormat()
+    public function getFormat(string $countryCode = null)
     {
+        $countryCode = $countryCode ?: $this->getAddressValue('country_code');
+
         $repository = app('address-field.repository');
-        $countryCode = $this->getAddressValue('country_code');
 
         if ($countryCode) {
-            return [$countryCode => $repository->addressFormatForField($countryCode, $this)];
+            return $repository->addressFormatForField($countryCode, $this);
         }
 
-        return [];
+        return [
+            // 'country_code' => '',
+            // 'locale'       => '',
+            'fields'       => [],
+            'labels'       => [
+                'country_code' => $repository->label('country'),
+            ],
+        ];
     }
 
     /**
@@ -111,25 +130,112 @@ class Address extends Field
     {
         $repository = app('address-field.repository');
 
-        return array_merge([
-            'country_code' => [
-                'attribute' => 'country_code',
-                'name'      => $repository->label('country'),
-                'options'   => $repository->getOptionsList($repository->countries(true)),
-            ],
+        return array_merge(parent::jsonSerialize(), [
+            'countries' => $repository->getOptionsList($this->getCountries()),
             'format' => $this->getFormat(),
-        ], parent::jsonSerialize());
+            'value' => $this->value ?: [],
+        ]);
     }
 
     /**
      * Get a value from the address.
      *
      * @param  string $attribute
+     *
      * @return string
      */
-    protected function getAddressValue(string $attribute)
+    public function getAddressValue(string $attribute)
     {
         return $this->value[$attribute] ?? null;
+    }
+
+    /**
+     * Set a value in the address.
+     *
+     * @param  string $attribute
+     * @param  string|null $value
+     *
+     * @return string
+     */
+    public function setAddressValue(string $attribute, ?string $value)
+    {
+        if (!is_array($this->value)) {
+            $this->value = [];
+        }
+
+        $this->value[$attribute] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get the countries used by this field.
+     *
+     * @return string[]
+     */
+    public function getCountries()
+    {
+        $repository = app('address-field.repository');
+
+        $countries = $repository->countries(true)->all();
+
+        if (isset($this->limitCountries['only'])) {
+            return Arr::only($countries, $this->limitCountries['only']);
+        } elseif (isset($this->limitCountries['except'])) {
+            return Arr::except($countries, $this->limitCountries['except']);
+        }
+
+        return $countries;
+    }
+
+    /**
+     * Limit the field to these specific countries only.
+     *
+     * @param  string[] $countries
+     * @return $this
+     */
+    public function onlyCountries(array $countries)
+    {
+        $this->limitCountries['only'] = $countries;
+
+        return $this;
+    }
+
+    /**
+     * Limit the field to specific countries except these.
+     *
+     * @param  string[] $countries
+     * @return $this
+     */
+    public function exceptCountries(array $countries)
+    {
+        $this->limitCountries['except'] = $countries;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
+    {
+        if ($request->exists($requestAttribute)) {
+            $value = json_decode($request[$requestAttribute], true);
+
+            if ($countryCode = $value['country_code'] ?? null) {
+                $fields = $this->getFormat($countryCode);
+                $fields = $fields['fields'];
+                $fields[] = 'country_code';
+
+                $value = Arr::only($value, $fields);
+            } else {
+                $value = [];
+            }
+
+            $model->{$attribute} = $value;
+            //TODO Split into separate fields if configured
+            //TODO Hydrate from separate fields if configured
+        }
     }
 
 }

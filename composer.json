@@ -17,7 +17,8 @@
         "orchestra/testbench": "^5.1.0",
         "phpunit/phpunit": "^9.0"
     },
-    "repositories": [{
+    "repositories": [
+        {
             "type": "composer",
             "url": "https://nova.laravel.com"
         }
@@ -29,7 +30,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Inspheric\\Fields\\Test\\": "tests/"
+            "Tests\\": "tests/"
         }
     },
     "suggest": {

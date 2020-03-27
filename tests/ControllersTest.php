@@ -1,6 +1,6 @@
 <?php
 
-namespace Inspheric\Fields\Tests;
+namespace Tests;
 
 use Laravel\Nova\Nova;
 

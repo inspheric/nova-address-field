@@ -1,6 +1,6 @@
 <?php
 
-namespace Inspheric\Fields\Tests;
+namespace Tests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;

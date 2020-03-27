@@ -21,10 +21,12 @@ class AddressFieldServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // @codeCoverageIgnoreStart
         Nova::serving(function (ServingNova $event) {
             Nova::script('address', __DIR__.'/../dist/js/field.js');
             Nova::style('address', __DIR__.'/../dist/css/field.css');
         });
+        // @codeCoverageIgnoreEnd
 
         $this->app->booted(function () {
             $this->routes();
@@ -64,9 +66,11 @@ class AddressFieldServiceProvider extends ServiceProvider
      */
     protected function routes()
     {
+        // @codeCoverageIgnoreStart
         if ($this->app->routesAreCached()) {
             return;
         }
+        // @codeCoverageIgnoreEnd
 
         Route::middleware('web') //nova
                 ->namespace('Inspheric\\Fields\\Http\\Controllers')
