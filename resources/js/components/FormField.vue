@@ -2,25 +2,25 @@
     <default-field :field="field" :errors="errors" :fullWidthContent="true">
         <template slot="field">
             <div class="flex border-b border-40"
-                :class="{ 'remove-bottom-border': hasCountry(false) }"
+                :class="{ 'remove-bottom-border': formatLoaded(false) }"
             >
                 <div class="w-1/5 pr-8"
                     :class="{
-                        'pb-0': hasCountry(false),
-                        'pb-4': hasCountry(true)
+                        'pb-0': formatLoaded(false),
+                        'pb-4': formatLoaded(true)
                     }"
                 >
                         <form-label
                             :label-for="`${field.attribute}_country_code`"
                             :class="{ 'mb-2': showHelpText && field.helpText }"
                         >
-                            {{ field.format.labels.country_code }}
+                            {{ field.format.country_label }}
                         </form-label>
                 </div>
                 <div class="w-2/5 pl-8"
                     :class="{
-                        'pb-0': hasCountry(false),
-                        'pb-4': hasCountry(true)
+                        'pb-0': formatLoaded(false),
+                        'pb-4': formatLoaded(true)
                     }"
                 >
                     <select-control
@@ -30,11 +30,12 @@
                         class="w-full form-control form-select"
                         :options="field.countries"
                         @change="updateFormat"
+                        :disabled="isReadonly"
                     >
                         <option value="" selected>{{ __('Choose an option') }}</option>
                     </select-control>
                     <!-- :class="errorClasses"
-                    :disabled="isReadonly" -->
+                     -->
 
                     <!-- <help-text class="error-text mt-2 text-danger" v-if="showErrors && hasError">
                         {{ firstError }}
@@ -44,20 +45,23 @@
                 </div>
             </div>
 
-            <div v-if="hasCountry(true)">
+            <div v-if="formatLoaded(true)">
                 <div class="flex border-b border-40"
                     :class="{ 'remove-bottom-border': index == field.format.fields.length - 1 }"
 
-                    v-for="(subfield, index) in field.format.fields" v-bind:key="subfield"
+                    v-for="(subfield, index) in field.format.fields" v-bind:key="index"
                 >
                     <div class="w-1/5 py-4 pr-8"
                         :class="{ 'pb-0': index == field.format.fields.length - 1 }"
                     >
                             <form-label
-                                :label-for="subfield"
+                                :label-for="`${field.attribute}_${subfield.attribute}`"
                             >
                             <!-- :class="{ 'mb-2': showHelpText && subfield.helpText }" -->
-                                {{ field.format.labels[subfield] }}
+                                {{ subfield.label }}
+                                <span v-if="subfield.required" class="text-danger text-sm">{{
+                                    __('*')
+                                }}</span>
                             </form-label>
                     </div>
                     <div class="w-2/5 py-4 pl-8"
@@ -65,14 +69,13 @@
                     >
                         <input
                             class="w-full form-control form-input form-input-bordered"
-                            :id="`${field.attribute}_${subfield}`"
-                            :dusk="`${field.attribute}_${subfield}`"
-                            v-model="field.value[subfield]"
+                            :id="`${field.attribute}_${subfield.attribute}`"
+                            :dusk="`${field.attribute}_${subfield.attribute}`"
+                            v-model="field.value[subfield.attribute]"
+                            :disabled="isReadonly"
                         />
-                        <!-- :disabled="isReadonly" -->
                         <!-- v-bind="extraAttributes" -->
-                        <!-- :class="errorClasses"
-                        :disabled="isReadonly" -->
+                        <!-- :class="errorClasses" -->
 
                         <!-- <help-text class="error-text mt-2 text-danger" v-if="showErrors && hasError">
                             {{ firstError }}
@@ -85,7 +88,7 @@
 
             <!-- <component
                 :class="{ 'remove-bottom-border': index == field.fields.length - 1 }"
-                v-if="hasCountry(false)"
+                v-if="formatLoaded(false)"
                 v-for="(subfield, index) in field.fields"
                 :key="index"
                 :is="`form-${subfield.component}`"
@@ -114,7 +117,7 @@ export default {
          * Set the initial, internal value for the field.
          */
         // setInitialValue() {
-        //     this.value = this.field.value || {}
+            // this.value = this.field.value || { country_code: null }
         // },
 
         /**
@@ -129,8 +132,8 @@ export default {
             formData.append(this.field.attribute, JSON.stringify(this.value || {}))
         },
 
-        hasCountry(has) {
-            return (this.field.format.fields.length == 0) != has
+        formatLoaded(loaded) {
+            return (this.field.format.fields.length == 0) != loaded
         },
 
         async updateFormat(event) {

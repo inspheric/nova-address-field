@@ -519,6 +519,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
 
 
 
@@ -532,7 +535,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
          * Set the initial, internal value for the field.
          */
         // setInitialValue() {
-        //     this.value = this.field.value || {}
+        // this.value = this.field.value || { country_code: null }
         // },
 
         /**
@@ -546,8 +549,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         fill: function fill(formData) {
             formData.append(this.field.attribute, JSON.stringify(this.value || {}));
         },
-        hasCountry: function hasCountry(has) {
-            return this.field.format.fields.length == 0 != has;
+        formatLoaded: function formatLoaded(loaded) {
+            return this.field.format.fields.length == 0 != loaded;
         },
         updateFormat: function () {
             var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee(event) {
@@ -11616,7 +11619,7 @@ var render = function() {
           "div",
           {
             staticClass: "flex border-b border-40",
-            class: { "remove-bottom-border": _vm.hasCountry(false) }
+            class: { "remove-bottom-border": _vm.formatLoaded(false) }
           },
           [
             _c(
@@ -11624,8 +11627,8 @@ var render = function() {
               {
                 staticClass: "w-1/5 pr-8",
                 class: {
-                  "pb-0": _vm.hasCountry(false),
-                  "pb-4": _vm.hasCountry(true)
+                  "pb-0": _vm.formatLoaded(false),
+                  "pb-4": _vm.formatLoaded(true)
                 }
               },
               [
@@ -11640,7 +11643,7 @@ var render = function() {
                   [
                     _vm._v(
                       "\n                        " +
-                        _vm._s(_vm.field.format.labels.country_code) +
+                        _vm._s(_vm.field.format.country_label) +
                         "\n                    "
                     )
                   ]
@@ -11654,8 +11657,8 @@ var render = function() {
               {
                 staticClass: "w-2/5 pl-8",
                 class: {
-                  "pb-0": _vm.hasCountry(false),
-                  "pb-4": _vm.hasCountry(true)
+                  "pb-0": _vm.formatLoaded(false),
+                  "pb-4": _vm.formatLoaded(true)
                 }
               },
               [
@@ -11666,7 +11669,8 @@ var render = function() {
                     attrs: {
                       id: _vm.field.attribute + "_country_code",
                       dusk: _vm.field.attribute + "_country_code",
-                      options: _vm.field.countries
+                      options: _vm.field.countries,
+                      disabled: _vm.isReadonly
                     },
                     on: { change: _vm.updateFormat },
                     model: {
@@ -11695,14 +11699,14 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.hasCountry(true)
+        _vm.formatLoaded(true)
           ? _c(
               "div",
               _vm._l(_vm.field.format.fields, function(subfield, index) {
                 return _c(
                   "div",
                   {
-                    key: subfield,
+                    key: index,
                     staticClass: "flex border-b border-40",
                     class: {
                       "remove-bottom-border":
@@ -11719,13 +11723,29 @@ var render = function() {
                         }
                       },
                       [
-                        _c("form-label", { attrs: { "label-for": subfield } }, [
-                          _vm._v(
-                            "\n                            " +
-                              _vm._s(_vm.field.format.labels[subfield]) +
-                              "\n                        "
-                          )
-                        ])
+                        _c(
+                          "form-label",
+                          {
+                            attrs: {
+                              "label-for":
+                                _vm.field.attribute + "_" + subfield.attribute
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(subfield.label) +
+                                "\n                            "
+                            ),
+                            subfield.required
+                              ? _c(
+                                  "span",
+                                  { staticClass: "text-danger text-sm" },
+                                  [_vm._v(_vm._s(_vm.__("*")))]
+                                )
+                              : _vm._e()
+                          ]
+                        )
                       ],
                       1
                     ),
@@ -11744,17 +11764,21 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.field.value[subfield],
-                              expression: "field.value[subfield]"
+                              value: _vm.field.value[subfield.attribute],
+                              expression: "field.value[subfield.attribute]"
                             }
                           ],
                           staticClass:
                             "w-full form-control form-input form-input-bordered",
                           attrs: {
-                            id: _vm.field.attribute + "_" + subfield,
-                            dusk: _vm.field.attribute + "_" + subfield
+                            id: _vm.field.attribute + "_" + subfield.attribute,
+                            dusk:
+                              _vm.field.attribute + "_" + subfield.attribute,
+                            disabled: _vm.isReadonly
                           },
-                          domProps: { value: _vm.field.value[subfield] },
+                          domProps: {
+                            value: _vm.field.value[subfield.attribute]
+                          },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -11762,7 +11786,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.field.value,
-                                subfield,
+                                subfield.attribute,
                                 $event.target.value
                               )
                             }

@@ -198,7 +198,7 @@ class AddressRepository
 
             return false;
 
-        })->filter()->all();
+        })->filter()->keyBy('attribute')->all();
     }
 
     /**
@@ -252,7 +252,7 @@ class AddressRepository
 
         $fields = collect($fields)->filter(function ($field) use ($hidden) {
             return !in_array($field['attribute'], $hidden, true);
-        })->values()->all();
+        })->all();
 
         return [
             // 'country_code' => $countryCode,

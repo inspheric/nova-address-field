@@ -133,7 +133,9 @@ class Address extends Field
         return array_merge(parent::jsonSerialize(), [
             'countries' => $repository->getOptionsList($this->getCountries()),
             'format' => $this->getFormat(),
-            'value' => $this->value ?: [],
+            'value' => $this->value ?: [
+                'country_code' => null,
+            ],
         ]);
     }
 
@@ -222,8 +224,10 @@ class Address extends Field
         if ($request->exists($requestAttribute)) {
             $value = json_decode($request[$requestAttribute], true);
 
+            // dump($requestAttribute, $request[$requestAttribute], $value);
+
             if ($countryCode = $value['country_code'] ?? null) {
-                $fields = $this->getFormat($countryCode);
+                $fields = $this->getUsedFields($countryCode);
                 $fields = $fields['fields'];
                 $fields[] = 'country_code';
 
