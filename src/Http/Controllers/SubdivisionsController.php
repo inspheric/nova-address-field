@@ -5,6 +5,7 @@ namespace Inspheric\Fields\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Inspheric\Fields\AddressRepository;
 
 class SubdivisionsController extends Controller
 {
@@ -18,6 +19,9 @@ class SubdivisionsController extends Controller
      */
     public function handle(Request $request, ...$parents)
     {
-        return app('address-field.repository')->subdivisions($parents, true);
+        /** @var AddressRepository $repository */
+        $repository = app('address-field.repository');
+
+        return $repository->subdivisions($parents, true);
     }
 }

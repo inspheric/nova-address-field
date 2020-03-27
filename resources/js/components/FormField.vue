@@ -139,7 +139,13 @@ export default {
             if (country_code) {
                 Nova.request()
                     .get(
-                        `/nova-vendor/address-field/formats/${country_code}`
+                        `/nova-vendor/address-field/formats/${country_code}`,
+                        {
+                            params: {
+                                resource: this.resourceName,
+                                attribute: this.field.attribute
+                            }
+                        }
                     )
                     .then(response => {
                         this.field.format = response.data

@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Inspheric\Fields\Address;
 use Inspheric\Fields\AddressRepository;
 use Laravel\Nova\Nova;
@@ -112,20 +112,16 @@ class AddressRepositoryTest extends TestCase
         $format = $this->repository->addressFormatForField('CN', $field);
 
         $this->assertArrayHasKey('fields', $format);
-        $this->assertArrayHasKey('labels', $format);
+        $this->assertArrayHasKey('country_label', $format);
 
-        $this->assertContains('dependent_locality', $format['fields']);
-        $this->assertNotContains('recipient', $format['fields']);
-
-        $this->assertArrayHasKey('dependent_locality', $format['labels']);
-        $this->assertArrayNotHasKey('recipient', $format['labels']);
+        $this->assertArrayContainsKeyValue(['attribute' => 'dependent_locality'], $format['fields']);
+        $this->assertArrayNotContainsKeyValue(['attribute' => 'recipient'], $format['fields']);
 
         $field = Address::make('Home Address', 'home_address')->withRecipient();
 
         $format = $this->repository->addressFormatForField('CN', $field);
 
-        $this->assertContains('recipient', $format['fields']);
-        $this->assertArrayHasKey('recipient', $format['labels']);
+        $this->assertArrayContainsKeyValue(['attribute' => 'recipient'], $format['fields']);
     }
 
     /**
@@ -137,11 +133,11 @@ class AddressRepositoryTest extends TestCase
 
         $format = $this->repository->addressFormatForField('CN', $field);
 
-        $this->assertEquals('address_line', head($format['fields']));
+        $this->assertEquals('address_line', head($format['fields'])['attribute']);
 
         $localFormat = $this->repository->addressFormatForField('CN', $field, 'zh');
 
-        $this->assertEquals('address_line', end($localFormat['fields']));
+        $this->assertEquals('address_line', last($localFormat['fields'])['attribute']);
     }
 
     /**
@@ -149,20 +145,15 @@ class AddressRepositoryTest extends TestCase
      */
     public function it_retrieves_an_address_format_for_a_resource_attribute()
     {
-        $resource = new class extends DefaultResource
-        {
-            public function fields(Request $request)
-            {
-                return [
-                    Address::make('Home Address', 'home_address')->withOrganization(),
-                ];
-            }
-        };
+        $resource = new DefaultResource();
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'home_address');
 
-        $this->assertContains('organization', $format['fields']);
-        $this->assertArrayHasKey('organization', $format['labels']);
+        $this->assertArrayNotContainsKeyValue(['attribute' => 'organization'], $format['fields']);
+
+        $format = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'work_address');
+
+        $this->assertArrayContainsKeyValue(['attribute' => 'organization'], $format['fields']);
     }
 
     /**
@@ -174,11 +165,11 @@ class AddressRepositoryTest extends TestCase
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'home_address');
 
-        $this->assertEquals('address_line', head($format['fields']));
+        $this->assertEquals('address_line', head($format['fields'])['attribute']);
 
         $localFormat = $this->repository->addressFormatForResourceAttribute('CN', $resource, 'home_address', 'zh');
 
-        $this->assertEquals('address_line', end($localFormat['fields']));
+        $this->assertEquals('address_line', last($localFormat['fields'])['attribute']);
     }
 
     /**
@@ -190,7 +181,7 @@ class AddressRepositoryTest extends TestCase
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', 'contact_addresses', 'home_address');
 
-        $this->assertEquals('address_line', head($format['fields']));
+        $this->assertEquals('address_line', head($format['fields'])['attribute']);
     }
 
     /**
@@ -202,17 +193,17 @@ class AddressRepositoryTest extends TestCase
 
         $format = $this->repository->addressFormatForResourceAttribute('CN', $resource);
 
-        $this->assertEquals('address_line', head($format['fields']));
+        $this->assertEquals('address_line', head($format['fields'])['attribute']);
     }
 
     /**
      * @test
      */
-    public function it_retrieves_a_defualt_address_format_without_resource_or_attribute()
+    public function it_retrieves_a_default_address_format_without_resource_or_attribute()
     {
         $format = $this->repository->addressFormatForResourceAttribute('CN');
 
-        $this->assertEquals('address_line', head($format['fields']));
+        $this->assertEquals('address_line', head($format['fields'])['attribute']);
     }
 
     /**

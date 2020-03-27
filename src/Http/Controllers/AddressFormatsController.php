@@ -5,6 +5,7 @@ namespace Inspheric\Fields\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Inspheric\Fields\AddressRepository;
 
 class AddressFormatsController extends Controller
 {
@@ -21,6 +22,9 @@ class AddressFormatsController extends Controller
         $resource = $request->get('resource');
         $attribute = $request->get('attribute');
 
-        return app('address-field.repository')->addressFormatForResourceAttribute($countryCode, $resource, $attribute);
+        /** @var AddressRepository $repository */
+        $repository = app('address-field.repository');
+
+        return $repository->addressFormatForResourceAttribute($countryCode, $resource, $attribute);
     }
 }

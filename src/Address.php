@@ -77,6 +77,8 @@ class Address extends Field
     {
         $this->hiddenFields = array_merge($fields, array_intersect($this->hiddenFields, ['recipient', 'organization']));
 
+        $this->hiddenFields = array_values(array_unique($this->hiddenFields));
+
         return $this;
     }
 
@@ -90,6 +92,8 @@ class Address extends Field
     public function hideField(string $field)
     {
         $this->hiddenFields[] = $field;
+
+        $this->hiddenFields = array_values(array_unique($this->hiddenFields));
 
         return $this;
     }
@@ -107,17 +111,15 @@ class Address extends Field
 
         $repository = app('address-field.repository');
 
+        $fields = [];
+
         if ($countryCode) {
-            return $repository->addressFormatForField($countryCode, $this);
+            $fields = $repository->addressFormatForField($countryCode, $this);
         }
 
         return [
-            // 'country_code' => '',
-            // 'locale'       => '',
-            'fields'       => [],
-            'labels'       => [
-                'country_code' => $repository->label('country'),
-            ],
+            'fields'        => $fields,
+            'country_label' => $repository->label('country'),
         ];
     }
 

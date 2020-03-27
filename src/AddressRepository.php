@@ -2,6 +2,7 @@
 
 namespace Inspheric\Fields;
 
+use CommerceGuys\Addressing\AddressFormat\AddressFormat;
 use CommerceGuys\Addressing\AddressFormat\AddressField;
 use CommerceGuys\Addressing\AddressFormat\AddressFormatRepositoryInterface;
 use CommerceGuys\Addressing\Country\CountryRepositoryInterface;
@@ -21,6 +22,24 @@ use Laravel\Nova\Resource;
 
 class AddressRepository
 {
+    /**
+     * @var int[]
+     */
+    const SUBDIVISION_DEPTHS = [
+        AddressField::ADMINISTRATIVE_AREA => 1,
+        AddressField::LOCALITY            => 2,
+        AddressField::DEPENDENT_LOCALITY  => 3,
+    ];
+
+    /**
+     * @var string[]
+     */
+    const FIELD_COMPONENTS = [
+        AddressField::ADDRESS_LINE1 => 'textarea',
+        AddressField::POSTAL_CODE   => 'small-text',
+        AddressField::SORTING_CODE  => 'small-text',
+    ];
+
     /**
      * @var string
      */
@@ -162,17 +181,58 @@ class AddressRepository
             $fields = $format->getFormat();
         }
 
-        $fields = $this->addressFieldsToArray($fields);
-        $usedFields = $this->toInternalFields($format->getUsedFields());
+        return collect($this->addressFieldsToArray($fields))->map(function ($key) use ($format, $countryCode) {
 
-        $labels = collect($usedFields)->mapWithKeys(function ($field) use ($countryCode) {
-            return [$field => $this->label($field, $countryCode)];
-        })->all();
+            if ($attribute = $this->toInternalField($key)) {
+                $component = $this->componentForSubfield($key, $format);
+                $required = $this->requiredForSubfield($key, $format);
+                $label = $this->label($attribute, $countryCode);
 
-        return [
-            'fields' => $fields,
-            'labels' => $labels,
-        ];
+                return [
+                    'attribute' => $attribute,
+                    'component' => $component,
+                    'required'  => $required,
+                    'label'     => $label,
+                ];
+            }
+
+            return false;
+
+        })->filter()->all();
+    }
+
+    /**
+     * Get the Vue field component for a subfield.
+     *
+     * @param  string $subfield
+     * @param  AddressFormat $format
+     * @return string
+     */
+    public function componentForSubfield(string $subfield, AddressFormat $format)
+    {
+        if ($component = static::FIELD_COMPONENTS[$subfield] ?? null) {
+            return $component;
+        }
+
+        if (static::SUBDIVISION_DEPTHS[$subfield] ?? 0 >= $format->getSubdivisionDepth()) {
+            return 'select';
+        }
+
+        return 'text';
+    }
+
+    /**
+     * Whether a subfield is required by the format.
+     *
+     * @param  string $subfield
+     * @param  AddressFormat $format
+     * @return bool
+     */
+    public function requiredForSubfield(string $subfield, AddressFormat $format)
+    {
+        $required = $format->getRequiredFields();
+
+        return in_array($subfield, $required, true);
     }
 
     /**
@@ -186,19 +246,19 @@ class AddressRepository
      */
     public function addressFormatForField(string $countryCode, Address $field, string $locale = null)
     {
-        $format = $this->addressFormatForLocale($countryCode, $locale);
+        $fields = $this->addressFormatForLocale($countryCode, $locale);
 
         $hidden = $field->getHiddenFields();
 
-        $fields = array_values(array_diff($format['fields'], $hidden));
-        $labels = Arr::except($format['labels'], $hidden);
-        $labels['country_code'] = $this->label('country');
+        $fields = collect($fields)->filter(function ($field) use ($hidden) {
+            return !in_array($field['attribute'], $hidden, true);
+        })->values()->all();
 
         return [
             // 'country_code' => $countryCode,
             // 'locale'       => $this->locale,
-            'fields'       => $fields,
-            'labels'       => $labels,
+            'fields'        => $fields,
+            'country_label' => $this->label('country'),
         ];
     }
 
@@ -232,7 +292,7 @@ class AddressRepository
 
         preg_match_all($expression, $formatString, $foundTokens);
 
-        return $this->toInternalFields($foundTokens[1]);
+        return $foundTokens[1];
     }
 
     /**

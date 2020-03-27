@@ -72,7 +72,7 @@ class AddressFieldServiceProvider extends ServiceProvider
         }
         // @codeCoverageIgnoreEnd
 
-        Route::middleware('web') //nova
+        Route::middleware('nova')
                 ->namespace('Inspheric\\Fields\\Http\\Controllers')
                 ->prefix('nova-vendor/address-field')
                 ->group(__DIR__.'/../routes/api.php');
