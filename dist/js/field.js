@@ -12188,6 +12188,19 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _this = this;
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12204,7 +12217,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['field', 'subfield', 'disabled']
+    props: ['field', 'subfield', 'disabled', 'depends'],
+
+    data: function data() {
+        return {
+            options: _this.subfield.options ? _this.subfield.options : []
+        };
+    },
+
+    methods: {
+        changeSelect: function changeSelect(event) {
+            console.log(event.target.value);
+        }
+    }
 });
 
 /***/ }),
@@ -12216,28 +12241,65 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "select-control",
-    {
-      staticClass: "w-full form-control form-select",
-      attrs: {
-        id: _vm.field.attribute + "_" + _vm.subfield.attribute,
-        dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
-        disabled: _vm.disabled,
-        options: []
-      },
-      model: {
-        value: _vm.field.value[_vm.subfield.attribute],
-        callback: function($$v) {
-          _vm.$set(_vm.field.value, _vm.subfield.attribute, $$v)
-        },
-        expression: "field.value[subfield.attribute]"
-      }
-    },
+    "div",
     [
-      _c("option", { attrs: { value: "", selected: "" } }, [
-        _vm._v(_vm._s(_vm.__("Choose an option")))
-      ])
-    ]
+      _vm.options.length
+        ? _c(
+            "select-control",
+            {
+              staticClass: "w-full form-control form-select",
+              attrs: {
+                id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+                dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+                disabled: _vm.disabled,
+                options: _vm.options
+              },
+              on: { change: _vm.changeSelect },
+              model: {
+                value: _vm.field.value[_vm.subfield.attribute],
+                callback: function($$v) {
+                  _vm.$set(_vm.field.value, _vm.subfield.attribute, $$v)
+                },
+                expression: "field.value[subfield.attribute]"
+              }
+            },
+            [
+              _c("option", { attrs: { value: "", selected: "" } }, [
+                _vm._v(_vm._s(_vm.__("Choose an option")))
+              ])
+            ]
+          )
+        : _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.field.value[_vm.subfield.attribute],
+                expression: "field.value[subfield.attribute]"
+              }
+            ],
+            staticClass: "w-full form-control form-input form-input-bordered",
+            attrs: {
+              id: _vm.field.attribute + "_" + _vm.subfield.attribute,
+              dusk: _vm.field.attribute + "_" + _vm.subfield.attribute,
+              disabled: _vm.disabled
+            },
+            domProps: { value: _vm.field.value[_vm.subfield.attribute] },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(
+                  _vm.field.value,
+                  _vm.subfield.attribute,
+                  $event.target.value
+                )
+              }
+            }
+          })
+    ],
+    1
   )
 }
 var staticRenderFns = []

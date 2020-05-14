@@ -12,6 +12,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Support\Fluent;
 use InvalidArgumentException;
 use Inspheric\Fields\Address;
 use Laravel\Nova\Fields\Field;
@@ -74,7 +75,13 @@ class AddressRepository
      * @param AddressFormatRepositoryInterface  $addressFormats
      * @param Translator  $translator
      */
-    public function __construct(string $locale, CountryRepositoryInterface $countries, SubdivisionRepositoryInterface $subdivisions, AddressFormatRepositoryInterface $addressFormats, Translator $translator)
+    public function __construct(
+        string $locale,
+        CountryRepositoryInterface $countries,
+        SubdivisionRepositoryInterface $subdivisions,
+        AddressFormatRepositoryInterface $addressFormats,
+        Translator $translator
+    )
     {
         $this->locale = $locale;
         $this->countries = $countries;
@@ -184,16 +191,18 @@ class AddressRepository
         return collect($this->addressFieldsToArray($fields))->map(function ($key) use ($format, $countryCode) {
 
             if ($attribute = $this->toInternalField($key)) {
-                $component = $this->componentForSubfield($key, $format);
-                $required = $this->requiredForSubfield($key, $format);
-                $label = $this->label($attribute, $countryCode);
 
-                return [
-                    'attribute' => $attribute,
-                    'component' => $component,
-                    'required'  => $required,
-                    'label'     => $label,
-                ];
+                $subfield = new Fluent([
+                    'key'          => $key,
+                    'country_code' => $countryCode,
+                    'attribute'    => $attribute,
+                    ]);
+
+                $subfield->component = $this->componentForSubfield($subfield, $format);
+                $subfield->required = $this->requiredForSubfield($subfield, $format);
+                $subfield->label = $this->label($attribute, $countryCode);
+
+                return $subfield;
             }
 
             return false;
@@ -204,18 +213,25 @@ class AddressRepository
     /**
      * Get the Vue field component for a subfield.
      *
-     * @param  string $subfield
+     * @param  Fluent $subfield
      * @param  AddressFormat $format
      * @return string
      */
-    public function componentForSubfield(string $subfield, AddressFormat $format)
+    public function componentForSubfield(Fluent $subfield, AddressFormat $format)
     {
-        if ($component = static::FIELD_COMPONENTS[$subfield] ?? null) {
+        if ($component = static::FIELD_COMPONENTS[$subfield->key] ?? null) {
             return $component;
         }
 
-        if (isset(static::SUBDIVISION_DEPTHS[$subfield])) {
-            if ($format->getSubdivisionDepth() >= static::SUBDIVISION_DEPTHS[$subfield]) {
+        if (isset(static::SUBDIVISION_DEPTHS[$subfield->key])) {
+            if ($format->getSubdivisionDepth() >= static::SUBDIVISION_DEPTHS[$subfield->key]) {
+
+                if ($subfield->key == AddressField::ADMINISTRATIVE_AREA) {
+                    $subfield->options = $this->getOptionsList($this->subdivisions($subfield->country_code, true));
+                } else {
+                    $subfield->options = [];
+                }
+
                 return 'select';
             }
         }
@@ -226,11 +242,11 @@ class AddressRepository
     /**
      * Whether a subfield is required by the format.
      *
-     * @param  string $subfield
+     * @param  Fluent $subfield
      * @param  AddressFormat $format
      * @return bool
      */
-    public function requiredForSubfield(string $subfield, AddressFormat $format)
+    public function requiredForSubfield(Fluent $subfield, AddressFormat $format)
     {
         $required = $format->getRequiredFields();
 
